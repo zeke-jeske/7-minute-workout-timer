@@ -23,7 +23,7 @@
         <div class='form-group'>
           <label>
             Exercise length:
-            <input type=number class='form-control d-inline w-auto' min=15 max=120 bind:value={settings.exerciseTime}/>
+            <input type=number class='form-control' min=15 max=120 bind:value={settings.exerciseTime}/>
             seconds
           </label>
         </div>
@@ -31,7 +31,7 @@
         <div class='form-group'>
           <label>
             Break length:
-            <input type=number class='form-control d-inline w-auto' min=3 max=60 bind:value={settings.restTime}/>
+            <input type=number class='form-control' min=3 max=60 bind:value={settings.restTime}/>
             seconds
           </label>
         </div>
@@ -39,7 +39,7 @@
         <div class='form-group'>
           <label>
             Count down length:
-            <input type=number class='form-control d-inline w-auto' min=0 max=30 bind:value={settings.countDownLength} /> seconds
+            <input type=number class='form-control' min=0 max=30 bind:value={settings.countDownLength} /> seconds
           </label>
         </div>
 
@@ -67,3 +67,10 @@
     </div>
   </div>
 </div>
+
+<style>
+  .form-control {
+    width: auto;
+    display: inline;
+  }
+</style>
