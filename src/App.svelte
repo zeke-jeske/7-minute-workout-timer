@@ -6,37 +6,46 @@ import SettingsModal from './SettingsModal.svelte'
 
 import { onDestroy } from 'svelte'
 
-let exerciseTime = 30
-let restTime = 10
-let countDownLength = 10
+let settings = {
+  exerciseTime: 30,
+  restTime: 10,
+  countDownLength: 10,
+  enableDarkMode: true,
+}
+
 const interval = setInterval(tick, 1000)
+
 const exercises = [
-	  'Jumping jacks',
-	  'Wall sit',
-	  'Push-ups',
-	  'Sit-ups',
-	  'Step-ups',
-	  'Squats',
-	  'Tricep dips',
-	  'Plank',
-	  'High knees',
-	  'Lunges',
-	  'Pushups with rotation',
-	  'Side plank'
+  'Jumping jacks',
+  'Wall sit',
+  'Push-ups',
+  'Sit-ups',
+  'Step-ups',
+  'Squats',
+  'Tricep dips',
+  'Plank',
+  'High knees',
+  'Lunges',
+  'Pushups with rotation',
+  'Side plank'
 ]
-	
-let timer, exerciseNumber, workoutComplete, resting, workoutStarted, enableDarkMode = true, paused
+  
+let timer, exerciseNumber, workoutComplete, resting, workoutStarted, paused
 let bodyClasses = document.body.classList
 reset()
 
-$: bodyClasses[enableDarkMode ? 'add' : 'remove']('bg-dark', 'text-light')
-$: bodyClasses[!enableDarkMode ? 'add' : 'remove']('bg-light', 'text-dark')
-$: if(!workoutStarted) timer = countDownLength
+// Dark mode
+$: bodyClasses[settings.enableDarkMode ? 'add' : 'remove']('bg-dark', 'text-light')
+$: bodyClasses[!settings.enableDarkMode ? 'add' : 'remove']('bg-light', 'text-dark')
+
+// Instantly update the count down if the settings change
+$: if(!workoutStarted) timer = settings.countDownLength
+
 $: upNext = exercises[exerciseNumber + 1]
 $: current = workoutStarted
   ? resting ? 'Rest' : exercises[exerciseNumber]
   : 'Get ready...'
-	
+  
 function tick() {
   if (!paused) {
     // decrease timer
@@ -49,26 +58,26 @@ function tick() {
     else rest()
   }
 }
-	
+  
 function nextExercise() {
-	  workoutStarted = true
-	  resting = false
-	  timer = exerciseTime
-	  exerciseNumber++
+  workoutStarted = true
+  resting = false
+  timer = settings.exerciseTime
+  exerciseNumber++
 }
-	
+  
 function finishWorkout() {
-	  workoutComplete = true
-	  clearInterval(interval)
+  workoutComplete = true
+  clearInterval(interval)
 }
-	
+  
 function rest() {
-	  resting = true
-	  timer = restTime
+  resting = true
+  timer = settings.restTime
 }
-	
+  
 function reset() {
-  timer = countDownLength
+  timer = settings.countDownLength
   exerciseNumber = -1
   workoutComplete = false
   resting = true
@@ -80,11 +89,8 @@ function pause() {
   paused = !paused
 }
 
-function updateSettings({detail: settings}) {
-  exerciseTime = settings.exerciseTime
-  restTime = settings.restTime
-  countDownLength = settings.countDownLength
-  enableDarkMode = settings.enableDarkMode
+function saveSettings({ detail: newSettings }) {
+  settings = newSettings
 }
 
 onDestroy(() => clearInterval(interval))
@@ -97,32 +103,32 @@ onDestroy(() => clearInterval(interval))
     justify-content: center;
   }
 
-	* {
-		box-sizing: border-box;
-		margin: 0;
-	}
-	
-	.container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		min-height: 100vh;
-		width: 100vw;
-		justify-content: center;
-		position: relative;
-	}
-	
-	#counter {
-		font-size: 10em;
-	}
-	
-	#nextExercise {
-		margin: 1rem 0 0;
-	}
-	
-	.invisible {
-		visibility: hidden;
-	}
+  * {
+    box-sizing: border-box;
+    margin: 0;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+    justify-content: center;
+    position: relative;
+  }
+  
+  #counter {
+    font-size: 10em;
+  }
+  
+  #nextExercise {
+    margin: 1rem 0 0;
+  }
+  
+  .invisible {
+    visibility: hidden;
+  }
 
 </style>
 
@@ -130,28 +136,23 @@ onDestroy(() => clearInterval(interval))
   if (e.key === ' ') pause()
 }} />
 
-<SettingsModal settings={{
-  exerciseTime,
-  restTime,
-  countDownLength,
-  enableDarkMode
-}} on:submit={updateSettings} />
+<SettingsModal settings={settings} on:save={saveSettings}/>
 
 <div class='container text-center'>
   <SettingsButton />
   <ResetButton on:click={reset} />
 
-	{#if (workoutComplete)}
-		<h1>Workout complete!</h1>
-	{:else}
-		<h1 id=counter>{timer}</h1>
-		<h1 id=currentExercise>{current}</h1>
-		<h2
-			id=nextExercise
-			class:invisible={!upNext}
-		>
-			Up next: {upNext}
-		</h2>
+  {#if (workoutComplete)}
+    <h1>Workout complete!</h1>
+  {:else}
+    <h1 id=counter>{timer}</h1>
+    <h1 id=currentExercise>{current}</h1>
+    <h2
+      id=nextExercise
+      class:invisible={!upNext}
+    >
+      Up next: {upNext}
+    </h2>
     <PauseButton paused={paused} on:click={pause} />
   {/if}
 </div>
