@@ -16,12 +16,6 @@
     newSettings.countDownLength <= 60
   )
   
-  $: console.log(settings)
-
-  function save() {
-    
-  }
-
   jq(() => {
     jq('#settingsModal').on('show.bs.modal', () => {
       newSettings  = {...settings}

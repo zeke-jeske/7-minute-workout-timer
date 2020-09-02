@@ -6,6 +6,7 @@ import SettingsModal from './SettingsModal.svelte'
 
 import { onDestroy } from 'svelte'
 
+
 let settings = {
   exerciseTime: 30,
   restTime: 10,
